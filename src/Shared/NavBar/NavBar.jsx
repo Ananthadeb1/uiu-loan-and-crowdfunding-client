@@ -31,6 +31,7 @@ const NavBar = () => {
 
     const navLinks = [
         { path: "/", label: "Home" },
+        { path: "/crowdfunding", label: "Crouwfunding" },
         ...(isAdmin ? [{ path: "/dashboard", label: "Dashboard" }] : [])
     ];
 
