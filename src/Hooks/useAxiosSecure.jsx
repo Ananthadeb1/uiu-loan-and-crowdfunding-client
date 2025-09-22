@@ -1,8 +1,8 @@
-import useAuth from './useAuth';
+import useAuth from "./useAuth";
 
 const useAxiosSecure = () => {
-    const auth = useAuth();
-    return auth?.axiosSecure;
+  const auth = useAuth();
+  return auth?.axiosSecure;
 };
 
 export default useAxiosSecure;
