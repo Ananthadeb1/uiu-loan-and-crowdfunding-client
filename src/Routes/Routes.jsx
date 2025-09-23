@@ -24,7 +24,15 @@ export const router = createBrowserRouter([
       {
         path: "/signup",
         element: <Signup></Signup>
-      }
+      },
+      {
+        path: "/crowdfunding",
+        element: <CrowdFunding></CrowdFunding>
+      },
+      {
+        path: "/loan-request",
+        element: <LoanRequest></LoanRequest>
+      },
     ],
   },
 ]);
