@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import bannerImage from "../../../../../public/images/Banner/Banner-Man.png"
 
 const Banner = () => {
@@ -15,12 +16,12 @@ const Banner = () => {
                             Welcome to <span className="font-semibold text-yellow-700">Peer Fund</span>, your trusted resource for financial loan reviews and comparisons. Skip the bank and get your loan from the ones that trust you.
                         </p>
                         <div className="flex justify-center md:justify-start gap-4">
-                            <button className="px-6 py-3 bg-green-700 text-white rounded-md hover:bg-green-800 font-medium transition-colors">
+                            <Link to="/loan-request" className="px-6 py-3 bg-green-700 text-white rounded-md hover:bg-green-800 font-medium transition-colors">
                                 apply for loan
-                            </button>
-                            <button className="px-6 py-3 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium transition-colors">
+                            </Link>
+                            <Link className="px-6 py-3 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium transition-colors">
                                 become a lender
-                            </button>
+                            </Link>
                         </div>
                     </div>
 

@@ -2,6 +2,7 @@
 import { FaCoins } from 'react-icons/fa';
 import { GiMoneyStack } from 'react-icons/gi';
 import { MdOutlineSimCardDownload } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 // import { MdOutlineCrowd } from 'react-icons/md';
 
 const services = [
@@ -9,16 +10,19 @@ const services = [
         title: 'Take Loan',
         description: 'Provides comprehensive and unbiased reviews of various types of loans...',
         icon: <FaCoins size={30} className="mb-4 text-yellow-400" />,
+        link: '/loan-request'
     },
     {
         title: 'Invest',
         description: 'Provides comprehensive and unbiased reviews of various types of loans...',
         icon: <GiMoneyStack size={30} className="mb-4 text-red-500" />,
+        link: '#'
     },
     {
         title: 'Crowdfunding',
         description: 'Provides comprehensive and unbiased reviews of various types of loans...',
         icon: <MdOutlineSimCardDownload size={30} className="mb-4 text-blue-400" />,
+        link: '/crowdfunding'
     },
 ];
 
@@ -45,6 +49,7 @@ const Services = () => {
                             {service.icon}
                             <h4 className="text-xl font-semibold mb-2">{service.title}</h4>
                             <p className="text-center text-sm">{service.description}</p>
+                            {/* <Link to={service.link}></Link> */}
                         </div>
                     ))}
                 </div>

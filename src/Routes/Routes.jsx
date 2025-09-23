@@ -27,11 +27,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "/crowdfunding",
-        element: <CrowdFunding></CrowdFunding>
+        element: <PrivateRoute>
+          <CrowdFunding></CrowdFunding>s
+        </PrivateRoute>
       },
       {
         path: "/loan-request",
-        element: <LoanRequest></LoanRequest>
+        element: <PrivateRoute>
+          <LoanRequest></LoanRequest>
+        </PrivateRoute>
       },
     ],
   },
