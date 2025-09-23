@@ -5,6 +5,9 @@ import Home from "../Components/Pages/Home/Home";
 import Main from "../Layout/Main";
 import Login from "../Ragistration/Login/Login";
 import Signup from "../Ragistration/Signup/Signup";
+import Profile from "../Components/Pages/Profile/Profile";
+import PrivateRoute from "../Shared/PriveteRoute/privateRoute";
+
 
 export const router = createBrowserRouter([
     {
@@ -22,7 +25,13 @@ export const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <Signup></Signup>
+            },
+            {
+                path: "/profile",
+                element: <Profile></Profile>
             }
+
+
         ],
     },
 ]);
