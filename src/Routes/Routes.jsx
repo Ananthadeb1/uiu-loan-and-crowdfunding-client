@@ -7,7 +7,7 @@ import Login from "../Ragistration/Login/Login";
 import Signup from "../Ragistration/Signup/Signup";
 import Profile from "../Components/Pages/Profile/Profile";
 import PrivateRoute from "../Shared/PriveteRoute/privateRoute";
-
+import UpdateInfo from "../Components/Pages/Profile/UpdateInfo";
 
 export const router = createBrowserRouter([
     {
@@ -29,9 +29,10 @@ export const router = createBrowserRouter([
             {
                 path: "/profile",
                 element: <Profile></Profile>
+            },{
+                path: "/update-info/:id", // ✅ add id param
+                element: <PrivateRoute><UpdateInfo /></PrivateRoute>
             }
-
-
         ],
     },
 ]);
