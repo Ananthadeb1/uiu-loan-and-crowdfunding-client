@@ -81,7 +81,7 @@ const NavBar = () => {
                                     <ul tabIndex={0} className="mt-2 p-2 shadow-lg menu dropdown-content bg-[#0A7265] rounded-md w-52 border border-[#F9D56E] backdrop-blur-sm">
                                         <li>
                                             <NavLink
-                                                to="/userProfile"
+                                                to="/profile"
                                                 className={({ isActive }) =>
                                                     `block px-4 py-2 rounded transition-colors duration-200 ${isActive
                                                         ? 'text-[#F9D56E] bg-[#0A7265]/90'
@@ -162,7 +162,7 @@ const NavBar = () => {
                     {user ? (
                         <>
                             <NavLink
-                                to="/userProfile"
+                                to="/profile"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={({ isActive }) =>
                                     `block px-3 py-2 rounded-md text-base font-medium ${isActive

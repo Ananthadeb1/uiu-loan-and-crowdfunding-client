@@ -3,9 +3,11 @@ import Home from "../Components/Pages/Home/Home";
 import Main from "../Layout/Main";
 import Login from "../Ragistration/Login/Login";
 import Signup from "../Ragistration/Signup/Signup";
+import Profile from "../Components/Pages/Profile/Profile";
+import PrivateRoute from "../Shared/PriveteRoute/privateRoute";
+import UpdateInfo from "../Components/Pages/Profile/UpdateInfo";
 import CrowdFunding from "../Components/Pages/CrowdFunding/CrowdFunding";
 import LoanRequest from "../Components/Pages/LoanRequest/LoanRequest";
-import PrivateRoute from "../Shared/PriveteRoute/privateRoute.jsx";
 
 
 export const router = createBrowserRouter([
@@ -27,15 +29,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "/crowdfunding",
-        element: <PrivateRoute>
-          <CrowdFunding></CrowdFunding>s
-        </PrivateRoute>
+        element: <PrivateRoute><CrowdFunding></CrowdFunding></PrivateRoute>
       },
       {
         path: "/loan-request",
-        element: <PrivateRoute>
-          <LoanRequest></LoanRequest>
-        </PrivateRoute>
+        element: <PrivateRoute><LoanRequest></LoanRequest></PrivateRoute>
+      },
+      {
+        path: "/update-info/:id",
+        element: <PrivateRoute><UpdateInfo /></PrivateRoute>
       },
     ],
   },
