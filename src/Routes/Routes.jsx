@@ -10,7 +10,7 @@ import CrowdFunding from "../Components/Pages/CrowdFunding/CrowdFunding";
 import LoanRequest from "../Components/Pages/LoanRequest/LoanRequest";
 import LoanBidding from "../Components/Pages/LoanBidding/LoanBidding";
 import LoanStatus from "../Components/Pages/LoanStatus/LoanStatus";
-
+import History from "../Components/Pages/History/History";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -53,6 +53,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <LoanStatus />
+          </PrivateRoute>
+        )
+      },
+      {
+        path: '/history',
+        element: (
+          <PrivateRoute>
+            <History />
           </PrivateRoute>
         )
       }

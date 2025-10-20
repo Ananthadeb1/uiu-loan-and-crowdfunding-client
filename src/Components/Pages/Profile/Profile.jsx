@@ -301,13 +301,18 @@ const Profile = () => {
             Loan Status
           </button>
 
-          <button style={{
-            padding: '10px 20px',
-            border: '1px solid #ddd',
-            backgroundColor: 'white',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}>
+          <button
+            onClick={() => navigate('/history')}
+            style={{
+              padding: '10px 20px',
+              border: '1px solid #28a745',
+              backgroundColor: '#28a745',
+              color: 'white',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
             History
           </button>
         </div>
