@@ -30,7 +30,7 @@ const Profile = () => {
             setError('');
 
             if (res.data?.uid) {
-              axiosSecure.get(`/userExtraInfo/${res.data.uid}`)
+              axiosSecure.get(`/api/profile/userExtraInfo/${res.data.uid}`)
                 .then(infoRes => {
                   setExtraInfo(infoRes.data);
                   setLoadingExtra(false);
@@ -62,13 +62,13 @@ const Profile = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setError('Please select a valid image file');
+      setError('Please select a valid image file (JPG, PNG, GIF)');
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Image size should be less than 5MB');
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Image size should be less than 2MB');
       return;
     }
 
@@ -76,47 +76,55 @@ const Profile = () => {
     setError('');
 
     try {
-      // Create FormData for file upload
+      console.log("Uploading actual image for user:", userData.email);
+
+      // Create FormData to send the actual file
       const formData = new FormData();
       formData.append('image', file);
       formData.append('userId', userData.uid);
       formData.append('email', userData.email);
 
-      // Upload image to backend
-      const uploadResponse = await axiosSecure.post('/upload-profile-image', formData, {
+      // Send the actual image file to server
+      const uploadResponse = await axiosSecure.post('/api/users/upload-profile-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // Update user data with new image URL
-      const updatedUserData = { ...userData, image: uploadResponse.data.imageUrl };
-      setUserData(updatedUserData);
+      console.log("Upload response:", uploadResponse.data);
 
-      // Update user in database
-      await axiosSecure.patch(`/users/${userData.email}`, {
-        image: uploadResponse.data.imageUrl
-      });
+      if (uploadResponse.data.success) {
+        // Update user data with the actual image URL
+        const updatedUserData = {
+          ...userData,
+          image: uploadResponse.data.imageUrl
+        };
+        setUserData(updatedUserData);
 
-      alert('Profile image updated successfully!');
+        alert('Profile image updated successfully!');
+      } else {
+        throw new Error(uploadResponse.data.message || 'Upload failed');
+      }
 
     } catch (error) {
       console.error('Error uploading image:', error);
-      setError('Failed to upload image. Please try again.');
+      setError(error.response?.data?.message || 'Failed to upload image. Please try again.');
     } finally {
       setUploading(false);
-      // Reset file input
       event.target.value = '';
     }
   };
 
   const handleImageClick = () => {
-    // Trigger file input click when image is clicked
     document.getElementById('profile-image-input').click();
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <div>Loading profile...</div>
+      </div>
+    );
   }
 
   return (
@@ -143,6 +151,7 @@ const Profile = () => {
         flexWrap: 'wrap',
         gap: '20px'
       }}>
+
         {/* Image Section */}
         <div style={{
           display: 'flex',
@@ -158,7 +167,7 @@ const Profile = () => {
                 width={150}
                 height={150}
                 style={{
-                  borderRadius: '50%',
+                  borderRadius: '50%', // ✅ ADD THIS FOR ROUNDED IMAGE
                   objectFit: 'cover',
                   border: '3px solid #e0e0e0'
                 }}
@@ -167,7 +176,7 @@ const Profile = () => {
               <div style={{
                 width: '150px',
                 height: '150px',
-                borderRadius: '50%',
+                borderRadius: '50%', // ✅ KEEP THIS FOR CONSISTENCY
                 backgroundColor: '#e0e0e0',
                 display: 'flex',
                 alignItems: 'center',
@@ -188,7 +197,7 @@ const Profile = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              borderRadius: '50%',
+              borderRadius: '50%', // ✅ MATCH THE BORDER RADIUS
               backgroundColor: 'rgba(0, 0, 0, 0.5)',
               display: 'flex',
               alignItems: 'center',
@@ -233,7 +242,7 @@ const Profile = () => {
             </button>
 
             <span style={{ fontSize: '12px', color: '#666', textAlign: 'center' }}>
-              JPG, PNG, GIF • Max 5MB
+              JPG, PNG, GIF • Max 2MB
             </span>
           </div>
         </div>
