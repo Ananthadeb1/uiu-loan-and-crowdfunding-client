@@ -284,15 +284,23 @@ const Profile = () => {
           }}>
             Verification
           </button>
-          <button style={{
-            padding: '10px 20px',
-            border: '1px solid #ddd',
-            backgroundColor: 'white',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}>
+
+          {/* Updated Loan Status Button */}
+          <button
+            onClick={() => navigate('/loan-status')}
+            style={{
+              padding: '10px 20px',
+              border: '1px solid #007bff',
+              backgroundColor: '#007bff',
+              color: 'white',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
             Loan Status
           </button>
+
           <button style={{
             padding: '10px 20px',
             border: '1px solid #ddd',

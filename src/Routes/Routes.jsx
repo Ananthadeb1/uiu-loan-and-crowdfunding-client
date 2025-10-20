@@ -9,7 +9,7 @@ import UpdateInfo from "../Components/Pages/Profile/UpdateInfo";
 import CrowdFunding from "../Components/Pages/CrowdFunding/CrowdFunding";
 import LoanRequest from "../Components/Pages/LoanRequest/LoanRequest";
 import LoanBidding from "../Components/Pages/LoanBidding/LoanBidding";
-
+import LoanStatus from "../Components/Pages/LoanStatus/LoanStatus";
 
 export const router = createBrowserRouter([
   {
@@ -41,13 +41,21 @@ export const router = createBrowserRouter([
         element: <PrivateRoute><UpdateInfo /></PrivateRoute>
       },
       {
-        path:"/profile",
-        element:<PrivateRoute><Profile></Profile></PrivateRoute>
+        path: "/profile",
+        element: <PrivateRoute><Profile></Profile></PrivateRoute>
       },
       {
         path: "/loan-bidding",
         element: <PrivateRoute><LoanBidding /></PrivateRoute>
-}
+      },
+      {
+        path: '/loan-status',
+        element: (
+          <PrivateRoute>
+            <LoanStatus />
+          </PrivateRoute>
+        )
+      }
     ],
   },
 ]);
