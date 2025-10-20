@@ -8,6 +8,7 @@ import PrivateRoute from "../Shared/PriveteRoute/privateRoute";
 import UpdateInfo from "../Components/Pages/Profile/UpdateInfo";
 import CrowdFunding from "../Components/Pages/CrowdFunding/CrowdFunding";
 import LoanRequest from "../Components/Pages/LoanRequest/LoanRequest";
+import LoanBidding from "../Components/Pages/LoanBidding/LoanBidding";
 
 
 export const router = createBrowserRouter([
@@ -39,6 +40,14 @@ export const router = createBrowserRouter([
         path: "/update-info/:id",
         element: <PrivateRoute><UpdateInfo /></PrivateRoute>
       },
+      {
+        path:"/profile",
+        element:<PrivateRoute><Profile></Profile></PrivateRoute>
+      },
+      {
+        path: "/loan-bidding",
+        element: <PrivateRoute><LoanBidding /></PrivateRoute>
+}
     ],
   },
 ]);

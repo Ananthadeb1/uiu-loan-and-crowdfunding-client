@@ -30,10 +30,13 @@ const NavBar = () => {
     };
 
     const navLinks = [
+
         { path: "/", label: "Home" },
-        { path: "/crowdfunding", label: "Crouwfunding" },
-        { path: "/loan-request", label: "Loan Request" },
+        ...(user ? [{ path: "/crowdfunding", label: "Crowdfunding" }] : []),
+        ...(user ? [{ path: "/loan-request", label: "Loan Request" }] : []),
+        ...(user ? [{ path: "/loan-bidding", label: "Loan Bidding" }] : []),
         ...(isAdmin ? [{ path: "/dashboard", label: "Dashboard" }] : [])
+        
     ];
 
     return (
