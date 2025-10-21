@@ -11,6 +11,10 @@ import LoanRequest from "../Components/Pages/LoanRequest/LoanRequest";
 import LoanBidding from "../Components/Pages/LoanBidding/LoanBidding";
 import LoanStatus from "../Components/Pages/LoanStatus/LoanStatus";
 import History from "../Components/Pages/History/History";
+import Verification from '../Components/Pages/Verification/Verification';
+import AdminVerification from '../Components/Pages/AdminVerification/AdminVerification';
+
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -61,6 +65,22 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <History />
+          </PrivateRoute>
+        )
+      },
+      {
+        path: '/verification',
+        element: (
+          <PrivateRoute>
+            <Verification />
+          </PrivateRoute>
+        )
+      },
+      {
+        path: '/admin/verification',
+        element: (
+          <PrivateRoute>
+            <AdminVerification />
           </PrivateRoute>
         )
       }

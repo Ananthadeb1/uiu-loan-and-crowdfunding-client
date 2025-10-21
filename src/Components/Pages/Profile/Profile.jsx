@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import useAdmin from "../../../Hooks/useAdmin";
 
 const Profile = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+  const [isAdmin] = useAdmin()
+
+
+
 
   const [userData, setUserData] = useState(null);
   const [extraInfo, setExtraInfo] = useState(null);
@@ -260,7 +265,7 @@ const Profile = () => {
             fontSize: '14px',
             fontWeight: 'bold'
           }}>
-            {userData?.role === "donor" ? "Donor" : "Regular User"}
+            {userData?.role === "donor" ? "Donor" : "Admin"}
           </span>
         </div>
 
@@ -275,15 +280,41 @@ const Profile = () => {
           }}>
             Privacy
           </button>
-          <button style={{
-            padding: '10px 20px',
-            border: '1px solid #ddd',
-            backgroundColor: 'white',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}>
-            Verification
-          </button>
+          {/* Show Verification button only for non-admin users */}
+          {!isAdmin && (
+            <button
+              onClick={() => navigate('/verification')}
+              style={{
+                padding: '10px 20px',
+                border: '1px solid #ff9800',
+                backgroundColor: '#ff9800',
+                color: 'white',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              Verification
+            </button>
+          )}
+
+          {/* Show Admin Verification button for admins */}
+          {isAdmin && (
+            <button
+              onClick={() => navigate('/admin/verification')}
+              style={{
+                padding: '10px 20px',
+                border: '1px solid #dc3545',
+                backgroundColor: '#dc3545',
+                color: 'white',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              Verify Users
+            </button>
+          )}
 
           {/* Updated Loan Status Button */}
           <button
