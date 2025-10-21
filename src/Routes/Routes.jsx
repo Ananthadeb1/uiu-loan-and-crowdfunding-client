@@ -14,6 +14,7 @@ import History from "../Components/Pages/History/History";
 import Verification from '../Components/Pages/Verification/Verification';
 import AdminVerification from '../Components/Pages/AdminVerification/AdminVerification';
 import AdminDashboard from '../Components/Pages/AdminDashboard/AdminDashboard';
+import LoanComparison from "../Components/Pages/LoanComparison/LoanComparison"; // ADDED
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
       {
         path: "/loan-request",
         element: <PrivateRoute><LoanRequest></LoanRequest></PrivateRoute>
+      },
+      {
+        path: "/loan-comparison", // ADDED
+        element: <PrivateRoute><LoanComparison></LoanComparison></PrivateRoute>
       },
       {
         path: "/update-info/:id",
