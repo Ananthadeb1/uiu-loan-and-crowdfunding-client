@@ -1,457 +1,478 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: false
-});
-
-const OUTER_BG = "#E6EDEB";
-const FORM_BG = "#FFFFFF";
-const HEADER_BG = "#FFFFFF";
-const PRIMARY_COLOR = "#2c5aa0";
-const SECONDARY_COLOR = "#084C7F";
-const TABLE_HEADER_BG = "#2c5aa0";
-const BUTTON_BG = "#28a745";
-const BUTTON_HOVER = "#218838";
-
-const toast = (msg, type = "success") => {
-  const el = document.createElement("div");
-  el.textContent = msg;
-  Object.assign(el.style, {
-    position: "fixed",
-    left: "50%",
-    top: "24px",
-    transform: "translateX(-50%)",
-    zIndex: "9999",
-    padding: "10px 16px",
-    borderRadius: "10px",
-    fontWeight: "600",
-    boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-    color: "#0F172A",
-    background: "#FFFFFF",
-    border: type === "success" ? "1px solid #22c55e" : "1px solid #ef4444",
-    pointerEvents: "none"
-  });
-  document.body.appendChild(el);
-  setTimeout(() => {
-    el.style.transition = "opacity 300ms";
-    el.style.opacity = "0";
-    setTimeout(() => el.remove(), 320);
-  }, 2200);
-};
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import useAuth from "../../../Hooks/useAuth";
 
 const LoanComparison = () => {
+  const { user } = useAuth();
   const [offers, setOffers] = useState([]);
-  const [selectedOffers, setSelectedOffers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [selectedOffer, setSelectedOffer] = useState(null);
+  const [alert, setAlert] = useState({ show: false, message: "", type: "" });
+  const [acceptedOffers, setAcceptedOffers] = useState([]);
+  const [showAcceptedOffers, setShowAcceptedOffers] = useState(false);
+  const axiosSecure = useAxiosSecure();
 
+  // Show popup alert
+  const showAlert = (message, type = "error") => {
+    setAlert({ show: true, message, type });
+    setTimeout(() => setAlert({ show: false, message: "", type: "" }), 4000);
+  };
+
+  // Fetch offers
   useEffect(() => {
-    fetchOffers();
-  }, []);
-
-  const fetchOffers = async () => {
-    try {
-      const response = await api.get("/api/comparison/offers");
-      setOffers(response.data.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching offers:", error);
-      toast("Failed to load loan offers", "error");
-      setLoading(false);
-    }
-  };
-
-  const toggleOfferSelection = (offerId) => {
-    setSelectedOffers(prev => {
-      if (prev.includes(offerId)) {
-        return prev.filter(id => id !== offerId);
-      } else if (prev.length < 4) {
-        return [...prev, offerId];
+    const fetchOffers = async () => {
+      if (!user?.uid) {
+        showAlert("Please log in to view your loan offers", "error");
+        setLoading(false);
+        return;
       }
-      return prev;
-    });
+
+      try {
+        setLoading(true);
+        const response = await axiosSecure.get(`/api/comparison/my-offers?userId=${user.uid}`);
+        
+        if (response.data.success) {
+          const allOffers = response.data.data || [];
+          setOffers(allOffers);
+          
+          // Get accepted offers
+          const accepted = allOffers.filter(offer => offer.status === "accepted");
+          setAcceptedOffers(accepted);
+          
+          if (accepted.length > 0) {
+            showAlert(`You have ${accepted.length} accepted offer(s)`, "success");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching offers:", error);
+        showAlert("Failed to load offers", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, [axiosSecure, user]);
+
+  // SIMPLE PER-LOAN LOCKING: Check which loans have accepted offers
+  const getAcceptedLoanIds = () => {
+    return acceptedOffers.map(offer => offer.loanId.toString());
   };
 
-  const handleTakeOffer = (offerId) => {
-    toast(`Offer ${offerId} selected!`, "success");
-    // Add your offer acceptance logic here
+  // Check if a specific offer's loan is locked
+  const isLoanLocked = (offer) => {
+    const acceptedLoanIds = getAcceptedLoanIds();
+    return acceptedLoanIds.includes(offer.loanId.toString());
   };
 
-  const renderStars = (rating) => {
-    const fullStars = Math.floor(rating);
-    const emptyStars = 5 - fullStars;
-    return '★'.repeat(fullStars) + '☆'.repeat(emptyStars);
+  // Check if a specific offer can be selected
+  const canSelectOffer = (offer) => {
+    return offer.status === "pending" && !isLoanLocked(offer);
   };
 
-  // Inline Styles
-  const styles = {
-    container: {
-      minHeight: "100vh",
-      backgroundColor: OUTER_BG
-    },
-    header: {
-      backgroundColor: HEADER_BG,
-      padding: "1rem 2rem",
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    },
-    headerTitle: {
-      color: PRIMARY_COLOR,
-      margin: 0,
-      fontSize: "1.5rem",
-      fontWeight: "bold"
-    },
-    nav: {
-      display: "flex",
-      gap: "2rem"
-    },
-    navLink: {
-      textDecoration: "none",
-      color: "#333",
-      fontWeight: "500",
-      cursor: "pointer"
-    },
-    activeNavLink: {
-      color: PRIMARY_COLOR,
-      fontWeight: "bold"
-    },
-    content: {
-      maxWidth: "1200px",
-      margin: "0 auto",
-      padding: "2rem"
-    },
-    title: {
-      textAlign: "center",
-      color: "#333",
-      marginBottom: "2rem",
-      fontSize: "2rem"
-    },
-    offerSelection: {
-      marginBottom: "3rem"
-    },
-    selectionTitle: {
-      marginBottom: "1rem",
-      color: "#333"
-    },
-    offersGrid: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-      gap: "1.5rem",
-      marginTop: "1rem"
-    },
-    offerCard: {
-      background: "white",
-      border: "2px solid #e0e0e0",
-      borderRadius: "8px",
-      padding: "1.5rem",
-      cursor: "pointer",
-      transition: "all 0.3s ease"
-    },
-    selectedOfferCard: {
-      borderColor: PRIMARY_COLOR,
-      backgroundColor: "#f0f7ff"
-    },
-    offerHeader: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: "1rem"
-    },
-    offerType: {
-      margin: 0,
-      color: "#333",
-      textTransform: "capitalize",
-      fontSize: "1.1rem",
-      fontWeight: "bold"
-    },
-    amount: {
-      fontWeight: "bold",
-      color: PRIMARY_COLOR,
-      fontSize: "1.1rem"
-    },
-    offerDetails: {
-      color: "#666"
-    },
-    detailText: {
-      margin: "0.5rem 0"
-    },
-    selectionIndicator: {
-      marginTop: "1rem",
-      padding: "0.5rem",
-      textAlign: "center",
-      background: "#f8f9fa",
-      borderRadius: "4px",
-      fontSize: "0.9rem",
-      color: "#666"
-    },
-    selectedIndicator: {
-      background: PRIMARY_COLOR,
-      color: "white"
-    },
-    comparisonTable: {
-      background: "white",
-      borderRadius: "8px",
-      padding: "2rem",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
-    },
-    table: {
-      width: "100%",
-      borderCollapse: "collapse",
-      margin: "1rem 0"
-    },
-    tableHeader: {
-      background: TABLE_HEADER_BG,
-      color: "white",
-      fontWeight: "bold",
-      padding: "1rem",
-      textAlign: "center",
-      border: "1px solid #e0e0e0"
-    },
-    tableCell: {
-      padding: "1rem",
-      textAlign: "center",
-      border: "1px solid #e0e0e0"
-    },
-    firstColumn: {
-      background: "#f8f9fa",
-      fontWeight: "bold",
-      textAlign: "left"
-    },
-    takeButton: {
-      background: BUTTON_BG,
-      color: "white",
-      border: "none",
-      padding: "0.5rem 1rem",
-      borderRadius: "4px",
-      cursor: "pointer",
-      fontWeight: "bold"
-    },
-    comparisonActions: {
-      textAlign: "center",
-      marginTop: "2rem"
-    },
-    nextButton: {
-      background: SECONDARY_COLOR,
-      color: "white",
-      border: "none",
-      padding: "0.75rem 2rem",
-      borderRadius: "4px",
-      cursor: "pointer",
-      fontSize: "1.1rem",
-      fontWeight: "bold"
-    },
-    footer: {
-      background: "#333",
-      color: "white",
-      marginTop: "4rem"
-    },
-    footerContent: {
-      maxWidth: "1200px",
-      margin: "0 auto",
-      padding: "2rem",
-      display: "grid",
-      gridTemplateColumns: "2fr 1fr 1fr",
-      gap: "2rem"
-    },
-    footerSection: {
-      marginBottom: "1rem"
-    },
-    footerTitle: {
-      color: PRIMARY_COLOR,
-      marginBottom: "1rem"
-    },
-    footerLink: {
-      color: "#ccc",
-      textDecoration: "none",
-      display: "block",
-      margin: "0.5rem 0",
-      cursor: "pointer"
-    },
-    footerBottom: {
-      textAlign: "center",
-      padding: "1rem",
-      borderTop: "1px solid #555",
-      color: "#ccc"
-    },
-    loading: {
-      textAlign: "center",
-      padding: "2rem",
-      fontSize: "1.2rem",
-      color: "#666"
+  // Select offer
+  const selectOffer = (offer) => {
+    if (!canSelectOffer(offer)) {
+      if (isLoanLocked(offer)) {
+        showAlert("This loan already has an accepted offer", "error");
+      } else if (offer.status !== "pending") {
+        showAlert("This offer is not available for selection", "error");
+      }
+      return;
+    }
+
+    setSelectedOffer(offer._id);
+    showAlert(`Offer from ${offer.donorName} selected`, "info");
+  };
+
+  // Accept offer
+  const handleAcceptOffer = async () => {
+    if (!selectedOffer) {
+      showAlert("Please select an offer first", "error");
+      return;
+    }
+
+    const offer = offers.find(o => o._id === selectedOffer);
+    if (!offer) {
+      showAlert("Selected offer not found", "error");
+      return;
+    }
+
+    // Double-check if loan is locked
+    if (isLoanLocked(offer)) {
+      showAlert("This loan already has an accepted offer", "error");
+      return;
+    }
+
+    try {
+      showAlert("Accepting offer...", "info");
+      
+      const response = await axiosSecure.post(`/api/offers/${selectedOffer}/accept`, {
+        loanId: offer.loanId
+      });
+
+      if (response.data.success) {
+        showAlert("Offer accepted successfully!", "success");
+        
+        // Refresh offers to get updated statuses
+        const refreshResponse = await axiosSecure.get(`/api/comparison/my-offers?userId=${user.uid}`);
+        if (refreshResponse.data.success) {
+          const updatedOffers = refreshResponse.data.data || [];
+          setOffers(updatedOffers);
+          setAcceptedOffers(updatedOffers.filter(o => o.status === "accepted"));
+        }
+        
+        setSelectedOffer(null);
+      }
+    } catch (error) {
+      console.error("Error accepting offer:", error);
+      showAlert(error.response?.data?.message || "Failed to accept offer", "error");
     }
   };
 
-  if (loading) return <div style={styles.loading}>Loading offers...</div>;
+  // Get offers grouped by loan
+  const getOffersByLoan = () => {
+    const loanMap = {};
+    
+    offers.forEach(offer => {
+      if (!loanMap[offer.loanId]) {
+        loanMap[offer.loanId] = {
+          loanId: offer.loanId,
+          purpose: offer.purpose,
+          offers: [],
+          hasAccepted: false
+        };
+      }
+      loanMap[offer.loanId].offers.push(offer);
+      if (offer.status === "accepted") {
+        loanMap[offer.loanId].hasAccepted = true;
+      }
+    });
+    
+    return Object.values(loanMap);
+  };
+
+  // Get pending offers that can be selected
+  const getSelectableOffers = () => {
+    return offers.filter(offer => canSelectOffer(offer));
+  };
+
+  const loansWithOffers = getOffersByLoan();
+  const selectableOffers = getSelectableOffers();
+  const selectedOfferDetails = offers.find(o => o._id === selectedOffer);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="text-xl text-gray-600">Loading your loan offers...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user?.uid) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please Log In</h1>
+          <Link to="/login" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={styles.container}>
-      {/* Header */}
-      <header style={styles.header}>
-        <h1 style={styles.headerTitle}>Peer Fund</h1>
-        <nav style={styles.nav}>
-          <span style={styles.navLink} onClick={() => navigate("/request-loan")}>Request Loan</span>
-          <span style={styles.navLink} onClick={() => navigate("/invest")}>Invest</span>
-          <span style={{...styles.navLink, ...styles.activeNavLink}}>Loan Comparison</span>
-          <span style={styles.navLink} onClick={() => navigate("/crowd-funding")}>Crowd Funding</span>
-          <span style={styles.navLink} onClick={() => navigate("/logout")}>Log out</span>
-        </nav>
-      </header>
-
-      {/* Main Content */}
-      <div style={styles.content}>
-        <h2 style={styles.title}>Loan Comparison</h2>
-        
-        {/* Offer Selection Section */}
-        <div style={styles.offerSelection}>
-          <h3 style={styles.selectionTitle}>Select up to 4 offers to compare:</h3>
-          <div style={styles.offersGrid}>
-            {offers.map((offer) => (
-              <div 
-                key={offer._id}
-                style={{
-                  ...styles.offerCard,
-                  ...(selectedOffers.includes(offer._id) ? styles.selectedOfferCard : {})
-                }}
-                onClick={() => toggleOfferSelection(offer._id)}
-              >
-                <div style={styles.offerHeader}>
-                  <h4 style={styles.offerType}>{offer.loanType}</h4>
-                  <span style={styles.amount}>{offer.amount}TK</span>
-                </div>
-                <div style={styles.offerDetails}>
-                  <p style={styles.detailText}><strong>Interest Rate:</strong> {offer.interestRate}%</p>
-                  <p style={styles.detailText}><strong>Term:</strong> {offer.repaymentTerm} months</p>
-                  <p style={styles.detailText}><strong>Lender Rating:</strong> {renderStars(offer.lenderRating)}</p>
-                </div>
-                <div style={{
-                  ...styles.selectionIndicator,
-                  ...(selectedOffers.includes(offer._id) ? styles.selectedIndicator : {})
-                }}>
-                  {selectedOffers.includes(offer._id) ? '✓ Selected' : 'Click to select'}
-                </div>
-              </div>
-            ))}
+    <div className="min-h-screen bg-gray-50 py-8">
+      {/* Alert */}
+      {alert.show && (
+        <div className={`fixed top-4 right-4 z-50 max-w-sm w-full ${
+          alert.type === "success" ? "bg-green-50 border-green-200 text-green-800" :
+          alert.type === "warning" ? "bg-yellow-50 border-yellow-200 text-yellow-800" :
+          alert.type === "info" ? "bg-blue-50 border-blue-200 text-blue-800" :
+          "bg-red-50 border-red-200 text-red-800"
+        } rounded-lg shadow-lg p-4 border`}>
+          <div className="flex justify-between items-center">
+            <p className="text-sm font-medium">{alert.message}</p>
+            <button onClick={() => setAlert({ show: false, message: "", type: "" })} className="text-gray-400 hover:text-gray-600">
+              ×
+            </button>
           </div>
         </div>
+      )}
 
-        {/* Comparison Table */}
-        {selectedOffers.length > 0 && (
-          <div style={styles.comparisonTable}>
-            <h3>Comparison Results</h3>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.tableHeader}></th>
-                  {offers
-                    .filter(offer => selectedOffers.includes(offer._id))
-                    .map((offer, index) => (
-                      <th key={offer._id} style={styles.tableHeader}>
-                        {String.fromCharCode(65 + index)}
-                      </th>
-                    ))
-                  }
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{...styles.tableCell, ...styles.firstColumn}}>Loan Type</td>
-                  {offers
-                    .filter(offer => selectedOffers.includes(offer._id))
-                    .map(offer => (
-                      <td key={offer._id} style={styles.tableCell}>
-                        {offer.loanType}
-                      </td>
-                    ))
-                  }
-                </tr>
-                <tr>
-                  <td style={{...styles.tableCell, ...styles.firstColumn}}>Interest Rate</td>
-                  {offers
-                    .filter(offer => selectedOffers.includes(offer._id))
-                    .map(offer => (
-                      <td key={offer._id} style={styles.tableCell}>
-                        {offer.interestRate}%
-                      </td>
-                    ))
-                  }
-                </tr>
-                <tr>
-                  <td style={{...styles.tableCell, ...styles.firstColumn}}>Repayment Terms</td>
-                  {offers
-                    .filter(offer => selectedOffers.includes(offer._id))
-                    .map(offer => (
-                      <td key={offer._id} style={styles.tableCell}>
-                        {offer.repaymentTerm} months
-                      </td>
-                    ))
-                  }
-                </tr>
-                <tr>
-                  <td style={{...styles.tableCell, ...styles.firstColumn}}>Lender Review</td>
-                  {offers
-                    .filter(offer => selectedOffers.includes(offer._id))
-                    .map(offer => (
-                      <td key={offer._id} style={styles.tableCell}>
-                        {renderStars(offer.lenderRating)}
-                      </td>
-                    ))
-                  }
-                </tr>
-                <tr>
-                  <td style={{...styles.tableCell, ...styles.firstColumn}}>Action</td>
-                  {offers
-                    .filter(offer => selectedOffers.includes(offer._id))
-                    .map(offer => (
-                      <td key={offer._id} style={styles.tableCell}>
-                        <button 
-                          style={styles.takeButton}
-                          onClick={() => handleTakeOffer(offer._id)}
-                        >
-                          Take
-                        </button>
-                      </td>
-                    ))
-                  }
-                </tr>
-              </tbody>
-            </table>
-            
-            <div style={styles.comparisonActions}>
-              <button style={styles.nextButton}>Next &gt;</button>
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <div></div>
+            <button
+              onClick={() => setShowAcceptedOffers(true)}
+              className="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+            >
+              My Accepted Offers ({acceptedOffers.length})
+            </button>
+          </div>
+          
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Loan Comparison</h1>
+          <p className="text-gray-600 text-lg">
+            Compare offers from different loans. You can accept one offer per loan.
+          </p>
+        </div>
+
+        {/* Accepted Offers Summary */}
+        {acceptedOffers.length > 0 && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-green-800 font-semibold">
+                  ✅ You have accepted {acceptedOffers.length} offer(s) across {new Set(acceptedOffers.map(o => o.loanId)).size} loan(s)
+                </span>
+                <p className="text-green-600 text-sm mt-1">
+                  Each loan can have only one accepted offer. Other offers for the same loan are locked.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAcceptedOffers(true)}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700"
+              >
+                View Details
+              </button>
             </div>
           </div>
         )}
-      </div>
 
-      {/* Footer */}
-      <footer style={styles.footer}>
-        <div style={styles.footerContent}>
-          <div style={styles.footerSection}>
-            <h4 style={styles.footerTitle}>Peer Fund</h4>
-            <p>Welcome to Peer Fund, your trusted resource for financial loan reviews and comparisons.</p>
+        {/* Selected Offer Section */}
+        {selectedOffer && selectedOfferDetails && canSelectOffer(selectedOfferDetails) && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900">Selected Offer</h3>
+                <p className="text-blue-700">
+                  From {selectedOfferDetails.donorName} for {selectedOfferDetails.purpose}
+                </p>
+                <p className="text-blue-600 font-bold">
+                  {selectedOfferDetails.offeredAmount?.toLocaleString()} TK at {selectedOfferDetails.interestRate}%
+                </p>
+              </div>
+              <button
+                onClick={handleAcceptOffer}
+                className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+              >
+                Accept This Offer
+              </button>
+            </div>
           </div>
-          <div style={styles.footerSection}>
-            <h4 style={styles.footerTitle}>Contact</h4>
-            <p>+1 234 567 89</p>
-            <p>info@gmail.com</p>
-            <p>Dhaka, Bangladesh</p>
-          </div>
-          <div style={styles.footerSection}>
-            <h4 style={styles.footerTitle}>Quick Link</h4>
-            <span style={styles.footerLink} onClick={() => navigate("/about")}>About</span>
-            <span style={styles.footerLink} onClick={() => navigate("/reviews")}>Loan Reviews</span>
-            <span style={styles.footerLink} onClick={() => navigate("/faq")}>Faq</span>
-          </div>
+        )}
+
+        {/* Loans Section */}
+        <div className="space-y-8">
+          {loansWithOffers.map(loanGroup => (
+            <div key={loanGroup.loanId} className="bg-white rounded-xl shadow-lg border border-gray-200">
+              {/* Loan Header */}
+              <div className={`p-4 border-b ${
+                loanGroup.hasAccepted ? "bg-green-50 border-green-200" : "bg-blue-50 border-blue-200"
+              }`}>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      {loanGroup.purpose}
+                    </h3>
+                    <p className="text-gray-600">
+                      {loanGroup.offers.length} offer(s) • {
+                        loanGroup.hasAccepted 
+                          ? "✅ Offer Accepted" 
+                          : `${loanGroup.offers.filter(o => o.status === "pending").length} pending`
+                      }
+                    </p>
+                  </div>
+                  {loanGroup.hasAccepted && (
+                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                      ACCEPTED
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Offers Grid */}
+              <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {loanGroup.offers.map((offer) => (
+                    <div
+                      key={offer._id}
+                      className={`border-2 rounded-lg p-4 transition-all ${
+                        selectedOffer === offer._id
+                          ? "border-green-500 bg-green-50"
+                          : loanGroup.hasAccepted
+                          ? "border-gray-300 bg-gray-50"
+                          : "border-gray-200 hover:border-blue-300 hover:shadow-md"
+                      }`}
+                    >
+                      {/* Donor Info */}
+                      <div className="mb-3">
+                        <div className="flex items-center mb-2">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-2 text-green-600 font-semibold text-sm">
+                            {offer.donorName?.charAt(0) || 'D'}
+                          </div>
+                          <span className="font-medium">{offer.donorName || "Donor"}</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          {offer.offeredAmount?.toLocaleString()} TK
+                        </div>
+                      </div>
+
+                      {/* Offer Details */}
+                      <div className="space-y-2 mb-4">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Interest:</span>
+                          <span className="font-semibold text-green-600">{offer.interestRate}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Term:</span>
+                          <span className="font-semibold">{offer.repaymentTime} months</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Status:</span>
+                          <span className={`font-semibold ${
+                            offer.status === "accepted" ? "text-green-600" :
+                            offer.status === "rejected" ? "text-red-600" :
+                            "text-yellow-600"
+                          }`}>
+                            {offer.status.toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Selection Button */}
+                      <button
+                        onClick={() => selectOffer(offer)}
+                        disabled={!canSelectOffer(offer)}
+                        className={`w-full py-2 rounded-lg font-semibold transition-colors ${
+                          !canSelectOffer(offer)
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : selectedOffer === offer._id
+                            ? "bg-green-600 text-white hover:bg-green-700"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
+                      >
+                        {!canSelectOffer(offer) 
+                          ? (loanGroup.hasAccepted ? "Loan Accepted" : "Not Available")
+                          : selectedOffer === offer._id 
+                          ? 'Selected' 
+                          : 'Select Offer'
+                        }
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div style={styles.footerBottom}>
-          <p>copyright © 2025 PeerFund. All Rights Reserved</p>
+
+        {/* No Offers Message */}
+        {loansWithOffers.length === 0 && (
+          <div className="bg-white rounded-xl shadow border border-gray-200 p-12 text-center">
+            <div className="text-gray-400 text-6xl mb-4">💸</div>
+            <div className="text-gray-500 text-xl mb-4">No loan offers yet</div>
+            <p className="text-gray-400 mb-6">
+              When donors make offers on your loan requests, they will appear here.
+            </p>
+            <Link to="/loan-request" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+              Create Loan Request
+            </Link>
+          </div>
+        )}
+
+        {/* Accepted Offers Modal */}
+        {showAcceptedOffers && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    My Accepted Offers ({acceptedOffers.length})
+                  </h2>
+                  <button
+                    onClick={() => setShowAcceptedOffers(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6">
+                {acceptedOffers.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="text-gray-400 text-6xl mb-4">📝</div>
+                    <div className="text-gray-500 text-xl mb-2">No Accepted Offers</div>
+                    <p className="text-gray-400">You haven't accepted any offers yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {acceptedOffers.map((offer) => (
+                      <div key={offer._id} className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="text-lg font-semibold text-green-900">
+                              {offer.purpose}
+                            </h3>
+                            <p className="text-green-700">Accepted from {offer.donorName}</p>
+                          </div>
+                          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                            ✅ ACCEPTED
+                          </span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <div className="text-sm text-gray-600">Loan Amount</div>
+                            <div className="text-lg font-bold text-green-600">
+                              {offer.offeredAmount?.toLocaleString()} TK
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600">Interest Rate</div>
+                            <div className="text-lg font-bold text-blue-600">
+                              {offer.interestRate}%
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600">Term</div>
+                            <div className="text-lg font-medium">
+                              {offer.repaymentTime} months
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 text-sm text-gray-600">
+                          <div>Accepted on: {new Date(offer.acceptedAt || offer.updatedAt).toLocaleDateString()}</div>
+                          <div>Donor: {offer.donorName} ({offer.donorEmail})</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div className="flex justify-between items-center mt-8">
+          <Link to="/loan-request" className="text-blue-600 hover:text-blue-800">
+            Create New Loan Request
+          </Link>
+          <Link to="/" className="text-gray-600 hover:text-gray-900">
+            Go to Home
+          </Link>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };
