@@ -35,7 +35,7 @@ const NavBar = () => {
         ...(user ? [{ path: "/crowdfunding", label: "Crowdfunding" }] : []),
         ...(user ? [{ path: "/loan-request", label: "Loan Request" }] : []),
         ...(user ? [{ path: "/loan-bidding", label: "Loan Bidding" }] : []),
-        ...(isAdmin ? [{ path: "/dashboard", label: "Dashboard" }] : [])
+        ...(isAdmin ? [{ path: "/admin/dashboard", label: "Dashboard" }] : [])
         
     ];
 

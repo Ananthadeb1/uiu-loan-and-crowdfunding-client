@@ -25,7 +25,7 @@ const LoanBidding = () => {
 
   // Check if user is donor, otherwise redirect
   useEffect(() => {
-    if (user && user.role !== "donor") {
+    if (user && user.role !== "donor" && user.role !== "admin") {
       showAlert("Only donors can access the loan bidding page", "error");
       navigate("/");
     }
@@ -33,7 +33,7 @@ const LoanBidding = () => {
 
   // Fetch loan requests from API
   useEffect(() => {
-    if (user?.role !== "donor") return;
+    if (user?.role !== "donor" && user?.role !== "admin") return;
 
     const fetchLoanRequests = async () => {
       try {
@@ -90,7 +90,7 @@ const LoanBidding = () => {
 
       // Save offer to database
       const response = await axiosSecure.post("/api/offers", offerData);
-      
+
       if (response.data.success) {
         showAlert("Offer submitted successfully!", "success");
         setSelectedLoan(null);
@@ -107,7 +107,7 @@ const LoanBidding = () => {
   };
 
   // Don't show page if user is not donor
-  if (user?.role !== "donor") {
+  if (user?.role !== "donor" && user?.role !== "admin") {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-xl text-red-600">Access Denied. Only donors can view this page.</div>
@@ -127,15 +127,13 @@ const LoanBidding = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       {/* Popup Alert */}
       {alert.show && (
-        <div className={`fixed top-4 right-4 z-50 max-w-sm w-full ${
-          alert.type === "success" 
-            ? "bg-green-50 border border-green-200 text-green-800" 
-            : "bg-red-50 border border-red-200 text-red-800"
-        } rounded-lg shadow-lg p-4 transform transition-all duration-300 ease-in-out`}>
+        <div className={`fixed top-4 right-4 z-50 max-w-sm w-full ${alert.type === "success"
+          ? "bg-green-50 border border-green-200 text-green-800"
+          : "bg-red-50 border border-red-200 text-red-800"
+          } rounded-lg shadow-lg p-4 transform transition-all duration-300 ease-in-out`}>
           <div className="flex items-center">
-            <div className={`flex-shrink-0 ${
-              alert.type === "success" ? "text-green-400" : "text-red-400"
-            }`}>
+            <div className={`flex-shrink-0 ${alert.type === "success" ? "text-green-400" : "text-red-400"
+              }`}>
               {alert.type === "success" ? (
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -220,11 +218,10 @@ const LoanBidding = () => {
                 {/* Status */}
                 <div className="mb-6">
                   <div className="text-sm text-gray-600 mb-1">Status</div>
-                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                    loan.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${loan.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                     loan.status === 'approved' ? 'bg-green-100 text-green-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
+                      'bg-red-100 text-red-800'
+                    }`}>
                     {loan.status?.charAt(0).toUpperCase() + loan.status?.slice(1)}
                   </span>
                 </div>
@@ -260,8 +257,8 @@ const LoanBidding = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Submit Your Offer</h2>
-            
-            
+
+
 
             <form onSubmit={handleSubmitBid}>
               <div className="space-y-4">

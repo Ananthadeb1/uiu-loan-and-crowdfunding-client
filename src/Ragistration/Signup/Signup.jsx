@@ -114,6 +114,7 @@ const Signup = () => {
                             <option value="" disabled>Select role</option>
                             <option value="donor">Donor</option>
                             <option value="user">User</option>
+                            {/* <option value="admin">Admin</option> */}
                         </select>
                         {errors.role && <span className="text-red-500 text-sm">This field is required</span>}
                     </div>

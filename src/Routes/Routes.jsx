@@ -13,7 +13,7 @@ import LoanStatus from "../Components/Pages/LoanStatus/LoanStatus";
 import History from "../Components/Pages/History/History";
 import Verification from '../Components/Pages/Verification/Verification';
 import AdminVerification from '../Components/Pages/AdminVerification/AdminVerification';
-
+import AdminDashboard from '../Components/Pages/AdminDashboard/AdminDashboard';
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +81,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AdminVerification />
+          </PrivateRoute>
+        )
+      },
+      {
+        path: '/admin/dashboard',
+        element: (
+          <PrivateRoute>
+            <AdminDashboard />
           </PrivateRoute>
         )
       }
