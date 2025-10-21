@@ -265,7 +265,11 @@ const Profile = () => {
             fontSize: '14px',
             fontWeight: 'bold'
           }}>
-            {userData?.role === "donor" ? "Donor" : "Admin"}
+            {{
+              donor: "Donor",
+              admin: "Admin",
+              user: "User"
+            }[userData?.role] || "User"}
           </span>
         </div>
 
