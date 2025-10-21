@@ -270,6 +270,7 @@ const Profile = () => {
               admin: "Admin",
               user: "User"
             }[userData?.role] || "User"}
+
           </span>
         </div>
 
