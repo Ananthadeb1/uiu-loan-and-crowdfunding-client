@@ -11,7 +11,6 @@ const NavBar = () => {
     const [visible, setVisible] = useState(true);
     console.log(isAdmin);
 
-
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollPos = window.pageYOffset;
@@ -30,13 +29,12 @@ const NavBar = () => {
     };
 
     const navLinks = [
-
         { path: "/", label: "Home" },
         ...(user ? [{ path: "/crowdfunding", label: "Crowdfunding" }] : []),
         ...(user ? [{ path: "/loan-request", label: "Loan Request" }] : []),
         ...(user ? [{ path: "/loan-bidding", label: "Loan Bidding" }] : []),
+        ...(user ? [{ path: "/loan-comparison", label: "Loan Comparison" }] : []), // ADDED THIS LINE
         ...(isAdmin ? [{ path: "/dashboard", label: "Dashboard" }] : [])
-        
     ];
 
     return (
