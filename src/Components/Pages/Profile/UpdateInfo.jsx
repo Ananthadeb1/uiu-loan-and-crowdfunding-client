@@ -39,8 +39,9 @@ const UpdateInfo = () => {
 
         console.log("Fetching extra info for user ID:", id);
 
+        // ✅ UPDATED: Use new endpoint path
         axiosSecure
-            .get(`/userExtraInfo/${id}`) // ✅ Matches your backend endpoint
+            .get(`/api/profile/userExtraInfo/${id}`)
             .then((res) => {
                 console.log("Extra info received:", res.data);
                 if (res.data) {
@@ -77,9 +78,8 @@ const UpdateInfo = () => {
         setError('');
 
         try {
-            // ✅ Send only the form data (birthday, gender, address)
-            // Your backend will automatically use the ID from the URL params
-            const result = await axiosSecure.post(`/userExtraInfo/${id}`, formData);
+            // ✅ UPDATED: Use new endpoint path
+            const result = await axiosSecure.post(`/api/profile/userExtraInfo/${id}`, formData);
 
             console.log("Update result:", result.data);
 

@@ -33,8 +33,9 @@ const NavBar = () => {
         ...(user ? [{ path: "/crowdfunding", label: "Crowdfunding" }] : []),
         ...(user ? [{ path: "/loan-request", label: "Loan Request" }] : []),
         ...(user ? [{ path: "/loan-bidding", label: "Loan Bidding" }] : []),
-        ...(user ? [{ path: "/loan-comparison", label: "Loan Comparison" }] : []), // ADDED THIS LINE
-        ...(isAdmin ? [{ path: "/dashboard", label: "Dashboard" }] : [])
+        ...(isAdmin ? [{ path: "/admin/dashboard", label: "Dashboard" }] : []),
+        ...(user ? [{ path: "/loan-comparison", label: "Loan Comparison" }] : []) // ADDED THIS LINE
+        
     ];
 
     return (
