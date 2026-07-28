@@ -8,7 +8,7 @@ const api = axios.create({
 });
 
 const OUTER_BG = "#E6EDEB";   // page background
-const FORM_BG  = "#FFFFFF";   // card background
+const FORM_BG = "#FFFFFF";   // card background
 const INPUT_BG = "#F5F6F7";   // inputs fixed color
 const INPUT_TX = "#000000";   // black text
 const SUBMIT_BG = "#084C7F";  // submit button
@@ -61,7 +61,7 @@ const LoanRequest = () => {
         repaymentTime: Number(values.repaymentTime), // months
         requestedAt: new Date().toISOString()
       };
-      const res = await api.post("/api/loans", payload);
+      const res = await api.post("/loanRequest", payload);
       toast(res?.data?.message || "Loan request submitted", "success");
       reset();
     } catch (e) {
