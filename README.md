@@ -98,16 +98,9 @@ UIU PeerFund is a full-stack, secure, student-centric financial platform designe
 
 ### 2. Backend Setup (`uiu-loan-and-crowdfunding-server`)
 ```bash
-cd uiu-loan-and-crowdfunding-server
 npm install
 ```
-Create a `.env` file in the server directory:
-```env
-PORT=5000
-DB_USER=your_db_user
-DB_PASS=your_db_password
-ACCESS_TOKEN_SECRET=your_jwt_secret_key
-VITE_projectId=uiu-loan-and-crowdfunding
+
 ```
 Start the development server:
 ```bash
@@ -116,9 +109,9 @@ npm run dev
 
 ### 3. Frontend Setup (`uiu-loan-and-crowdfunding-client`)
 ```bash
-cd uiu-loan-and-crowdfunding-client
 npm install
 ```
+<<<<<<< HEAD
 Create a `.env` file in the client directory:
 ```env
 VITE_apiKey=your_firebase_api_key
@@ -130,12 +123,9 @@ VITE_appId=your_app_id
 VITE_measurementId=your_measurement_id
 VITE_API_URL=https://uiu-loan-and-crowdfunding-server.onrender.com
 ```
+=======
+>>>>>>> c7ab92ebbe3338a98e7759e223416d733a2e4f7e
 Start the frontend development server:
 ```bash
 npm run dev
 ```
-
----
-
-## 📜 License
-This project is open-source under the [ISC License](LICENSE).
