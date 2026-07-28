@@ -8,7 +8,8 @@ import PrivateRoute from "../Shared/PriveteRoute/privateRoute";
 import UpdateInfo from "../Components/Pages/Profile/UpdateInfo";
 import CrowdFunding from "../Components/Pages/CrowdFunding/CrowdFunding";
 import LoanRequest from "../Components/Pages/LoanRequest/LoanRequest";
-
+import LoanBidding from "../Components/Pages/LoanBidding/LoanBidding";
+import LoanComparison from "../Components/Pages/LoanComparison/LoanComparison"; // ADDED
 
 export const router = createBrowserRouter([
   {
@@ -36,12 +37,20 @@ export const router = createBrowserRouter([
         element: <PrivateRoute><LoanRequest></LoanRequest></PrivateRoute>
       },
       {
+        path: "/loan-comparison", // ADDED
+        element: <PrivateRoute><LoanComparison></LoanComparison></PrivateRoute>
+      },
+      {
         path: "/update-info/:id",
         element: <PrivateRoute><UpdateInfo /></PrivateRoute>
       },
       {
-        path: "/profile",
-        element: <Profile></Profile>
+        path:"/profile",
+        element:<PrivateRoute><Profile></Profile></PrivateRoute>
+      },
+      {
+        path: "/loan-bidding",
+        element: <PrivateRoute><LoanBidding /></PrivateRoute>
       }
     ],
   },
