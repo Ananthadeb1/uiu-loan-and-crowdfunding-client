@@ -31,11 +31,12 @@ const NavBar = () => {
     const navLinks = [
         { path: "/", label: "Home" },
         ...(user ? [{ path: "/crowdfunding", label: "Crowdfunding" }] : []),
-        ...(user ? [{ path: "/loan-request", label: "Loan Request" }] : []),
+        ...(user && user.role !== "donor" ? [{ path: "/loan-request", label: "Loan Request" }] : []),
         ...(user ? [{ path: "/loan-bidding", label: "Loan Bidding" }] : []),
-        ...(user ? [{ path: "/loan-comparison", label: "Loan Comparison" }] : []), // ADDED THIS LINE
-        ...(isAdmin ? [{ path: "/dashboard", label: "Dashboard" }] : [])
+        ...(user ? [{ path: "/loan-comparison", label: "Loan Comparison" }] : []),
+        ...(user && isAdmin ? [{ path: "/dashboard", label: "Dashboard" }] : [])
     ];
+
 
     return (
         <nav className={`sticky top-0 z-50 bg-[#0A7265] shadow-md backdrop-blur-sm transition-transform duration-300 ${visible ? 'translate-y-0' : '-translate-y-full'}`}>

@@ -5,11 +5,13 @@ import Login from "../Ragistration/Login/Login";
 import Signup from "../Ragistration/Signup/Signup";
 import Profile from "../Components/Pages/Profile/Profile";
 import PrivateRoute from "../Shared/PriveteRoute/privateRoute";
+import AdminRoute from "../Shared/AdminRoute/AdminRoute";
+import Dashboard from "../Components/Pages/Dashboard/Dashboard";
 import UpdateInfo from "../Components/Pages/Profile/UpdateInfo";
 import CrowdFunding from "../Components/Pages/CrowdFunding/CrowdFunding";
 import LoanRequest from "../Components/Pages/LoanRequest/LoanRequest";
 import LoanBidding from "../Components/Pages/LoanBidding/LoanBidding";
-import LoanComparison from "../Components/Pages/LoanComparison/LoanComparison"; // ADDED
+import LoanComparison from "../Components/Pages/LoanComparison/LoanComparison";
 
 export const router = createBrowserRouter([
   {
@@ -37,7 +39,7 @@ export const router = createBrowserRouter([
         element: <PrivateRoute><LoanRequest></LoanRequest></PrivateRoute>
       },
       {
-        path: "/loan-comparison", // ADDED
+        path: "/loan-comparison",
         element: <PrivateRoute><LoanComparison></LoanComparison></PrivateRoute>
       },
       {
@@ -45,13 +47,17 @@ export const router = createBrowserRouter([
         element: <PrivateRoute><UpdateInfo /></PrivateRoute>
       },
       {
-        path:"/profile",
-        element:<PrivateRoute><Profile></Profile></PrivateRoute>
+        path: "/profile",
+        element: <PrivateRoute><Profile></Profile></PrivateRoute>
       },
       {
         path: "/loan-bidding",
         element: <PrivateRoute><LoanBidding /></PrivateRoute>
+      },
+      {
+        path: "/dashboard",
+        element: <AdminRoute><Dashboard /></AdminRoute>
       }
     ],
   },
-]);
+]);
