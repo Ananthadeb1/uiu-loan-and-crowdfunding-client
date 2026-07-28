@@ -393,8 +393,8 @@ const Dashboard = () => {
                                                     <p className="text-xs text-slate-500">{app.email}</p>
                                                 </div>
                                                 <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                                                    app.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' :
-                                                    app.status === 'Rejected' ? 'bg-rose-100 text-rose-800' :
+                                                    app.status?.toLowerCase() === 'approved' ? 'bg-emerald-100 text-emerald-800' :
+                                                    app.status?.toLowerCase() === 'rejected' ? 'bg-rose-100 text-rose-800' :
                                                     'bg-amber-100 text-amber-800'
                                                 }`}>
                                                     {app.status || 'Pending Review'}
@@ -407,13 +407,13 @@ const Dashboard = () => {
                                             </div>
                                             <div className="flex space-x-2 pt-2">
                                                 <button
-                                                    onClick={() => handleUpdateStatus('fundraise', app._id, 'Approved')}
+                                                    onClick={() => handleUpdateStatus('fundraise', app._id, 'approved')}
                                                     className="flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition"
                                                 >
                                                     Approve
                                                 </button>
                                                 <button
-                                                    onClick={() => handleUpdateStatus('fundraise', app._id, 'Rejected')}
+                                                    onClick={() => handleUpdateStatus('fundraise', app._id, 'rejected')}
                                                     className="flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition"
                                                 >
                                                     Reject
@@ -462,8 +462,8 @@ const Dashboard = () => {
                                                     </td>
                                                     <td className="py-3.5 px-4">
                                                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
-                                                            loan.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' :
-                                                            loan.status === 'Rejected' ? 'bg-rose-100 text-rose-800' :
+                                                            loan.status?.toLowerCase() === 'approved' ? 'bg-emerald-100 text-emerald-800' :
+                                                            loan.status?.toLowerCase() === 'rejected' ? 'bg-rose-100 text-rose-800' :
                                                             'bg-amber-100 text-amber-800'
                                                         }`}>
                                                             {loan.status || 'Pending'}
@@ -472,13 +472,13 @@ const Dashboard = () => {
                                                     <td className="py-3.5 px-4 text-center">
                                                         <div className="flex justify-center space-x-2">
                                                             <button
-                                                                onClick={() => handleUpdateStatus('loan', loan._id, 'Approved')}
+                                                                onClick={() => handleUpdateStatus('loan', loan._id, 'approved')}
                                                                 className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold"
                                                             >
                                                                 Approve
                                                             </button>
                                                             <button
-                                                                onClick={() => handleUpdateStatus('loan', loan._id, 'Rejected')}
+                                                                onClick={() => handleUpdateStatus('loan', loan._id, 'rejected')}
                                                                 className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-xs font-bold"
                                                             >
                                                                 Reject

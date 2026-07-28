@@ -28,15 +28,17 @@ const LoanBidding = () => {
     const fetchLoanRequests = async () => {
       setLoading(true);
       try {
-        const response = await axiosSecure.get("/api/loans");
-        setLoanRequests(response.data.data || []);
+        const response = await axiosSecure.get("/api/loans?status=approved");
+        const loans = response.data.data || response.data || [];
+        setLoanRequests(loans);
       } catch (error) {
         console.error("Error fetching loan requests:", error);
         // Fallback to /loanRequest endpoint if needed
         try {
           const fallbackRes = await axiosSecure.get("/loanRequest");
-          setLoanRequests(fallbackRes.data || []);
-        } catch (e) {
+          const loans = fallbackRes.data || [];
+          setLoanRequests(loans.filter((loan) => loan.status?.toLowerCase() === "approved"));
+        } catch {
           setLoanRequests([]);
         }
       } finally {
@@ -141,7 +143,7 @@ const LoanBidding = () => {
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold">Loan Bidding Marketplace</h1>
           <p className="text-emerald-100 max-w-2xl mx-auto text-sm sm:text-base">
-            Explore verified student loan applications, compare proposals, and offer customized peer lending terms.
+            Explore admin-approved student loan applications, compare proposals, and offer customized peer lending terms.
           </p>
         </div>
 
@@ -149,9 +151,9 @@ const LoanBidding = () => {
         {loanRequests.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-4 shadow-sm">
             <FaCoins className="text-4xl text-slate-300 mx-auto" />
-            <h3 className="text-lg font-bold text-slate-800">No active loan requests available for bidding</h3>
+            <h3 className="text-lg font-bold text-slate-800">No approved loan requests available for bidding</h3>
             <p className="text-slate-500 text-sm max-w-md mx-auto">
-              When students submit new loan applications, they will appear here for peer backer bids.
+              Only admin-approved loan requests appear here. Once a borrower submits a request and an admin verifies it, it will show up in the marketplace.
             </p>
             <Link 
               to="/loan-request" 

@@ -16,13 +16,26 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext(null);
+export const AuthContext = createContext({
+    user: null,
+    loading: true,
+    profileUpdating: false,
+    isAuthenticated: false,
+    createUser: async () => {},
+    login: async () => {},
+    loginWithGoogle: async () => {},
+    logout: async () => {},
+    updateUserProfile: async () => {},
+    setUser: () => {},
+    fetchUserData: async () => {},
+    axiosSecure: null,
+});
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 const axiosSecure = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: 'https://uiu-loan-and-crowdfunding-server.onrender.com',
 });
 
 const AuthProvider = ({ children }) => {
@@ -49,7 +62,7 @@ const AuthProvider = ({ children }) => {
         const requestInterceptor = axiosSecure.interceptors.request.use(config => {
             const token = localStorage.getItem('access-token');
             if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
+                config.headers = { ...(config.headers || {}), Authorization: "Bearer " + token };
             }
             return config;
         });

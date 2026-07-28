@@ -128,7 +128,7 @@ VITE_storageBucket=uiu-loan-and-crowdfunding.firebasestorage.app
 VITE_messagingSenderId=your_messaging_sender_id
 VITE_appId=your_app_id
 VITE_measurementId=your_measurement_id
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=https://uiu-loan-and-crowdfunding-server.onrender.com
 ```
 Start the frontend development server:
 ```bash

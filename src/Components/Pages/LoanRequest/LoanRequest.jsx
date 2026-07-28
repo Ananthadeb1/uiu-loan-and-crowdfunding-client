@@ -1,13 +1,9 @@
 import React from "react";
+import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import useAuth from "../../../Hooks/useAuth";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { useNavigate } from "react-router-dom";
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: false
-});
 
 const OUTER_BG = "#E6EDEB";   // page background
 const FORM_BG = "#FFFFFF";   // card background
@@ -46,6 +42,7 @@ const toast = (msg, type = "success") => {
 
 const LoanRequest = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   
   const {
@@ -60,8 +57,18 @@ const LoanRequest = () => {
   // Check if user is donor and redirect
   React.useEffect(() => {
     if (user?.role === "donor") {
-      alert("Donors cannot request loans. You can only lend money.");
-      navigate("/loan-bidding");
+      Swal.fire({
+        icon: "error",
+        title: "Access denied",
+        text: "Donors cannot request loans. You can only lend money.",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+      }).then(() => {
+        navigate("/loan-bidding");
+      });
     }
   }, [user, navigate]);
 
@@ -109,12 +116,34 @@ const LoanRequest = () => {
       
       console.log("Submitting loan request:", payload);
       
-      const res = await api.post("/api/loans", payload);
-      toast(res?.data?.message || "Loan request submitted", "success");
+      await axiosSecure.post("/api/loans", {
+        ...payload,
+        status: "pending",
+      });
+
+      await Swal.fire({
+        icon: "success",
+        title: "Loan request submitted",
+        text: "Your request has been sent to admin review. Once approved, it will appear in the Loan Bidding marketplace.",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+      });
       reset();
     } catch (e) {
       console.error("Submission error:", e);
-      toast(e?.response?.data?.message || "Submit failed", "error");
+      await Swal.fire({
+        icon: "error",
+        title: "Submission failed",
+        text: e?.response?.data?.message || "Unable to submit your loan request. Please try again.",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+      });
     }
   };
 

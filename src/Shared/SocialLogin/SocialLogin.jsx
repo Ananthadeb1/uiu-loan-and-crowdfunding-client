@@ -5,7 +5,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Provider/AuthProvider';
 
 const SocialLogin = () => {
-    const { loginWithGoogle } = useContext(AuthContext);
+    const auth = useContext(AuthContext);
+    const loginWithGoogle = auth?.loginWithGoogle;
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "/";

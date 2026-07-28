@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 
@@ -19,18 +20,45 @@ const Crowdfunding = () => {
   // ✅ handle fundraise submit
   const handleFundraise = async (data) => {
     try {
-      const res = await axios.post("http://localhost:5000/fundraise", data);
+      const res = await axios.post("https://uiu-loan-and-crowdfunding-server.onrender.com/fundraise", data);
 
       if (res.data.insertedId) {
-        alert("Fundraise submitted successfully!");
+        await Swal.fire({
+          icon: "success",
+          title: "Fundraise submitted",
+          text: "Fundraise submitted successfully!",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          allowOutsideClick: true,
+          allowEscapeKey: true,
+        });
         console.log("Saved:", res.data);
         reset();
       } else {
-        alert(res.data.message || "Submission failed.");
+        await Swal.fire({
+          icon: "error",
+          title: "Submission failed",
+          text: res.data.message || "Submission failed.",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          allowOutsideClick: true,
+          allowEscapeKey: true,
+        });
       }
     } catch (err) {
       console.error("Error submitting fundraise:", err);
-      alert("Something went wrong, please try again.");
+      await Swal.fire({
+        icon: "error",
+        title: "Submission failed",
+        text: "Something went wrong, please try again.",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+      });
     }
   };
 
@@ -38,7 +66,7 @@ const Crowdfunding = () => {
   useEffect(() => {
     if (activeTab === "donate") {
       axios
-        .get("http://localhost:5000/fundraise")
+        .get("https://uiu-loan-and-crowdfunding-server.onrender.com/fundraise")
         .then((res) => setFundraisers(res.data))
         .catch((err) =>
           console.error("Error fetching fundraise applicants:", err)
@@ -47,14 +75,25 @@ const Crowdfunding = () => {
   }, [activeTab]);
 
   // ✅ handle donate submit (dummy payment)
-  const handleDonate = () => {
+  const handleDonate = async () => {
     if (!donationAmount) {
-      alert("Please enter an amount!");
+      await Swal.fire({
+        icon: "warning",
+        title: "Missing amount",
+        text: "Please enter an amount!",
+      });
       return;
     }
-    alert(
-      `You have donated ${donationAmount} to ${selectedApplicant.fullName}. Thank you!`
-    );
+    await Swal.fire({
+      icon: "success",
+      title: "Donation complete",
+      text: `You have donated ${donationAmount} to ${selectedApplicant.fullName}. Thank you!`,
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      allowOutsideClick: true,
+      allowEscapeKey: true,
+    });
     setSelectedApplicant(null); // close modal
     setDonationAmount(""); // reset
   };

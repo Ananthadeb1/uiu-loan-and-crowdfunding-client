@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import useAuth from "../../../Hooks/useAuth";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { FaUserCircle, FaCamera, FaIdCard, FaCalendarAlt, FaVenusMars, FaMapMarkerAlt, FaEdit } from "react-icons/fa";
@@ -94,7 +95,16 @@ const Profile = () => {
         image: uploadResponse.data.imageUrl
       });
 
-      alert('Profile image updated successfully!');
+      await Swal.fire({
+        icon: 'success',
+        title: 'Profile image updated',
+        text: 'Profile image updated successfully!',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+      });
 
     } catch (error) {
       console.error('Error uploading image:', error);

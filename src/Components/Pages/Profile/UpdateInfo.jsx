@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import useAuth from "../../../Hooks/useAuth";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import { FaIdCard, FaCalendarAlt, FaVenusMars, FaMapMarkerAlt, FaSave, FaTimes } from "react-icons/fa";
@@ -65,7 +66,16 @@ const UpdateInfo = () => {
         e.preventDefault();
 
         if (!user) {
-            alert("Please log in to update information");
+            await Swal.fire({
+                icon: 'warning',
+                title: 'Login required',
+                text: 'Please log in to update information',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                allowOutsideClick: true,
+                allowEscapeKey: true,
+            });
             navigate('/login');
             return;
         }
@@ -77,7 +87,16 @@ const UpdateInfo = () => {
             const result = await axiosSecure.post(`/userExtraInfo/${id}`, formData);
 
             if (result.data.success || result.data.result) {
-                alert("Information updated successfully!");
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Updated',
+                    text: 'Information updated successfully!',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                });
                 navigate("/profile");
             } else {
                 throw new Error("Update failed");
