@@ -110,22 +110,12 @@ npm run dev
 ### 3. Frontend Setup (`uiu-loan-and-crowdfunding-client`)
 ```bash
 npm install
-```
-<<<<<<< HEAD
-Create a `.env` file in the client directory:
-```env
-VITE_apiKey=your_firebase_api_key
-VITE_authDomain=uiu-loan-and-crowdfunding.firebaseapp.com
-VITE_projectId=uiu-loan-and-crowdfunding
-VITE_storageBucket=uiu-loan-and-crowdfunding.firebasestorage.app
-VITE_messagingSenderId=your_messaging_sender_id
-VITE_appId=your_app_id
-VITE_measurementId=your_measurement_id
-VITE_API_URL=https://uiu-loan-and-crowdfunding-server.onrender.com
-```
-=======
->>>>>>> c7ab92ebbe3338a98e7759e223416d733a2e4f7e
 Start the frontend development server:
 ```bash
 npm run dev
 ```
+
+## Links
+- Live: https://earnest-salmiakki-e88ef9.netlify.app/
+- Client-Side: https://github.com/Ananthadeb1/uiu-loan-and-crowdfunding-client
+- Server-side: https://github.com/Ananthadeb1/uiu-loan-and-crowdfunding-server
